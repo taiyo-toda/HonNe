@@ -193,6 +193,26 @@
             border-radius: 5px;
             font-size: 14px;
         }
+        .delete-btn {
+    font-size: 12px;         /* 小さめ文字 */
+    padding: 2px 6px;        /* コンパクトな余白 */
+    margin-left: 8px;
+    background-color: #f0f0f0; /* 優しい薄いグレー */
+    color: #555;             /* 濃すぎない文字色 */
+    border: 1px solid #ccc;  /* 薄い枠線 */
+    border-radius: 6px;      /* 角を丸める */
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .delete-btn:hover {
+    background-color: #e0e0e0; /* ホバーでちょっと濃く */
+  }
+
+
+.delete-btn:hover {
+    background: #c0392b;
+}
     </style>
 </head>
 <body>
@@ -461,8 +481,8 @@
             
             topic.posts.forEach((post,index) => {
 // 初期化（古いデータにlikesが無い場合の対策）
- if (post.likes === undefined) post.likes = 0;
-        if (post.liked === undefined) post.liked = false;
+             if (post.likes === undefined) post.likes = 0;
+             if (post.liked === undefined) post.liked = false;
 
                 const postItem = document.createElement('div');
                 postItem.className = 'post-item';
@@ -475,12 +495,23 @@
             <button class="${likedClass}" onclick="toggleLike(${topic.id}, ${index})">
                 👍</button>
             <div class="topic-meta">いいね数: ${post.likes}件</div>
+            <button class="delete-btn" onclick="deletePost(${topic.id}, ${index})">🗑 削除</button>
                 `;
                 postsContainer.appendChild(postItem);
             });
             
             showPage('detail');
         }
+        // 投稿削除
+function deletePost(topicId, postIndex) {
+    const topic = topics.find(t => t.id === topicId);
+    if (!topic) return;
+
+    if (confirm("この投稿を削除してもよろしいですか？")) {
+        topic.posts.splice(postIndex, 1); // 該当の投稿を削除
+        showTopicDetail(topicId); // 再描画
+    }
+}
         // いいね切り替え
         function toggleLike(topicId, postIndex) {
     const topic = topics.find(t => t.id === topicId);
