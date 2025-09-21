@@ -178,23 +178,20 @@
         .filter-container {
             margin: 10px 0;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
+            gap: 10px;
+            /* 下記で左右の要素が均等な幅を持つように設定 */
         }
         
-        .filter-container label {
-            margin-right: 20px;
-            font-size: 15px;
-            color: #bfc0d1;
-            white-space: nowrap;
-        }
-        
+        .filter-container label,
         .filter-container select {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
+            flex: 1 1 45%;
+            font-size: 14px; /* 必要ならさらに小さく調整可能 */
+            text-align: center;
         }
+        
         .delete-btn {
     font-size: 12px;         /* 小さめ文字 */
     padding: 2px 6px;        /* コンパクトな余白 */
@@ -244,6 +241,12 @@
                     <option value="family">👨‍👩‍👧‍👦 家族</option>
                     <option value="money">💰 お金</option>
                     <option value="other">🔄 その他</option>
+                </select>
+                <label for="sort-selector">並べ替え: </label>
+                <select id="sort-selector">
+                    <option value="reaction">反応が多い順</option>
+                    <option value="new" selected>新しい順</option>
+                    <option value="old">古い順</option>
                 </select>
             </div>
 
@@ -592,68 +595,67 @@ function deletePost(topicId, postIndex) {
             });
         }
         
-        // 初期化
-        document.addEventListener('DOMContentLoaded', function() {
-            displayTopics();
-            // Add character counter and warning for post textarea
-            var postContent = document.getElementById('post-content');
-            var charCounter = document.getElementById('char-counter');
-            var submitButton = document.querySelector('#post-form button[type="submit"]');
-            if (postContent && charCounter && submitButton) {
-                postContent.addEventListener('input', function() {
-                    var currentLength = postContent.value.length;
-                    charCounter.textContent = currentLength + '/20';
-                    if (currentLength > 20) {
-                        postContent.style.border = '2px solid red';
-                        document.getElementById('warning-message').textContent = '20文字以内で入力してください';
-                        submitButton.disabled = true;
-                    } else {
-                        postContent.style.border = '';
-                        document.getElementById('warning-message').textContent = '';
-                        submitButton.disabled = false;
-                    }
-                });
+        // 新規追加: updateTopicList 関数（カテゴリーと並べ替えの両方に対応）
+function updateTopicList() {
+    const categoryFilter = document.getElementById('category-filter').value;
+    const sortValue = document.getElementById('sort-selector').value;
+    // カテゴリでフィルタリング
+    let listTopics = (categoryFilter === 'all') ? topics.slice() : topics.filter(topic => topic.category === categoryFilter);
+    // 並べ替え処理
+    if(sortValue === 'reaction') {
+        listTopics.sort((a, b) => b.posts.length - a.posts.length);
+    } else if(sortValue === 'new') {
+        listTopics.sort((a, b) => new Date(b.time) - new Date(a.time));
+    } else if(sortValue === 'old') {
+        listTopics.sort((a, b) => new Date(a.time) - new Date(b.time));
+    }
+    const list = document.getElementById('topic-list');
+    list.innerHTML = '';
+    listTopics.forEach(topic => {
+        const item = document.createElement('div');
+        item.className = 'topic-item';
+        item.onclick = () => showTopicDetail(topic.id);
+        item.innerHTML = `
+            <div class="topic-title">${categoryIcons[topic.category]} ${topic.title}</div>
+            <div class="topic-meta">${topic.posts.length}件の投稿 • ${topic.time}</div>
+        `;
+        list.appendChild(item);
+    });
+}
+// 既存の displayTopics と filterTopicsByCategory を updateTopicList を呼び出すように修正
+function displayTopics() {
+    updateTopicList();
+}
+function filterTopicsByCategory() {
+    updateTopicList();
+}
+// DOMContentLoaded 内に並べ替えドロップダウンの onchange を設定
+document.addEventListener('DOMContentLoaded', function() {
+    displayTopics();
+    const sortSelector = document.getElementById('sort-selector');
+    if(sortSelector) {
+        sortSelector.addEventListener('change', updateTopicList);
+    }
+    // Add character counter and warning for post textarea
+    var postContent = document.getElementById('post-content');
+    var charCounter = document.getElementById('char-counter');
+    var submitButton = document.querySelector('#post-form button[type="submit"]');
+    if (postContent && charCounter && submitButton) {
+        postContent.addEventListener('input', function() {
+            var currentLength = postContent.value.length;
+            charCounter.textContent = currentLength + '/20';
+            if (currentLength > 20) {
+                postContent.style.border = '2px solid red';
+                document.getElementById('warning-message').textContent = '20文字以内で入力してください';
+                submitButton.disabled = true;
+            } else {
+                postContent.style.border = '';
+                document.getElementById('warning-message').textContent = '';
+                submitButton.disabled = false;
             }
         });
-        // ...existing code...
-                // トピック作成
-                function createTopic(event) {
-                    event.preventDefault();
-                    
-                    const title = document.getElementById('title').value.trim();
-                    const description = document.getElementById('description').value.trim();
-                    const category = document.getElementById('category').value;
-                    
-                    // バリデーション
-                    if (!title || !category) {
-                        document.getElementById('form-error').textContent = 'タイトルとカテゴリーは必須です';
-                        return;
-                    }
-                    
-                    // 新しいトピック追加
-                    const newTopic = {
-                        id: nextId++,
-                        title: title,
-                        description: description,
-                        category: category,
-                        posts: [],
-                        time: getTime() // getTime()を使用
-                    };
-                    
-                    topics.unshift(newTopic);
-                    
-                    // フォームリセット
-                    document.getElementById('create-form').reset();
-                    document.getElementById('form-error').textContent = '';
-                    document.getElementById('form-success').textContent = 'トピックが作成されました！';
-                    
-                    // トップページに戻る
-                    setTimeout(() => {
-                        showPage('top');
-                        document.getElementById('form-success').textContent = '';
-                    }, 1500);
-                }
-        // ...existing code...
+    }
+});
     </script>
 </body>
 </html>
