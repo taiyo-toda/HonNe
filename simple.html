@@ -131,6 +131,26 @@
             font-size: 12px;
             margin: 5px 0;
         }
+        
+        /* フィルター */
+        .filter-container {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .filter-container label {
+            margin-right: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .filter-container select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -147,7 +167,22 @@
         <!-- トップページ -->
         <div id="top" class="page active">
             <h2>💬 トピック一覧</h2>
+            
             <button onclick="showPage('create')" style="width: 100%; margin: 20px 0;">+ 新しいトピックを作成</button>
+
+            <!-- ドロップダウンフィルター -->
+            <div class="filter-container">
+                <label for="category-filter">カテゴリーで絞り込み: </label>
+                <select id="category-filter" onchange="filterTopicsByCategory()">
+                    <option value="all">全て</option>
+                    <option value="work">💼 仕事</option>
+                    <option value="love">💕 恋愛</option>
+                    <option value="family">👨‍👩‍👧‍👦 家族</option>
+                    <option value="money">💰 お金</option>
+                    <option value="other">🔄 その他</option>
+                </select>
+            </div>
+
             <div id="topic-list">
                 <!-- トピックが動的に追加される -->
             </div>
@@ -412,6 +447,28 @@
             
             // 詳細ページを再表示
             showTopicDetail(currentTopic.id);
+        }
+        
+        // カテゴリーフィルター
+        function filterTopicsByCategory() {
+            const selectedCategory = document.getElementById('category-filter').value;
+            const filteredTopics = selectedCategory === 'all' ? topics : topics.filter(topic => topic.category === selectedCategory);
+            
+            const list = document.getElementById('topic-list');
+            list.innerHTML = '';
+            
+            filteredTopics.forEach(topic => {
+                const item = document.createElement('div');
+                item.className = 'topic-item';
+                item.onclick = () => showTopicDetail(topic.id);
+                
+                item.innerHTML = `
+                    <div class="topic-title">${categoryIcons[topic.category]} ${topic.title}</div>
+                    <div class="topic-meta">${topic.posts.length}件の投稿 • ${topic.time}</div>
+                `;
+                
+                list.appendChild(item);
+            });
         }
         
         // 初期化
