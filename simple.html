@@ -43,8 +43,8 @@
         
         /* ボタンスタイル */
         button {
-            background: #00c6e6;
-            color: #191e2b;
+            background: #213f55;
+            color: #ededf8;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
@@ -55,13 +55,18 @@
         }
       
         button.liked {
+<<<<<<< Updated upstream
             background: 00b3d4;
             color: #bfc0d1;
+=======
+            background: #00c6e6;
+            color: #191e2b;
+>>>>>>> Stashed changes
             font-weight: bold;
         }
         
         button:hover {
-            background: #00b3d4;
+            background: #00b4d496;
         }
         
         button:disabled {
@@ -128,12 +133,49 @@
         
         /* 投稿リスト */
         .post-item {
-            border-left: 3px solid #00c7e68b;
-            padding: 10px;
+            border-left: 3px solid #00c6e6;
+            padding:15px 10px 5px 10px ;
             margin: 10px 0;
             background: rgba(0, 198, 230, 0.05);
             border-radius: 5px;
             color: #bfc0d1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .post-content {
+            margin-bottom: 8px;
+        }
+        
+        .post-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        
+        .post-meta {
+            font-size: 12px;
+            color: #bfc0d1;
+            opacity: 0.7;
+        }
+        
+        .post-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .post-item button {
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+        
+        .like-count {
+            font-size: 12px;
+            color: #bfc0d1;
+            opacity: 0.8;
         }
         
         .nav-buttons {
@@ -173,6 +215,49 @@
             background: #253045;
             color: #bfc0d1;
         }
+        
+        /* 詳細ページヘッダー */
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .detail-header h2 {
+            margin: 0;
+            flex: 1;
+        }
+        
+        .detail-header button {
+            margin-left: 20px;
+            flex-shrink: 0;
+        }
+        
+        /* detail-contentのレイアウト */
+        #detail-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+        
+        #detail-content p {
+            flex: 1;
+            margin: 0;
+        }
+        
+        #detail-content .topic-meta {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .detail_content {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
       
         /* フィルター */
         .filter-container {
@@ -204,6 +289,29 @@
             border-radius: 5px;
             font-size: 14px;
         }
+<<<<<<< Updated upstream
+=======
+        .delete-btn {
+            font-size: 12px;         /* 小さめ文字 */
+            padding: 2px 6px;        /* コンパクトな余白 */
+            margin-left: 8px;
+            background-color: #f0f0f0; /* 優しい薄いグレー */
+            color: #555;             /* 濃すぎない文字色 */
+            border: 1px solid #ccc;  /* 薄い枠線 */
+            border-radius: 6px;      /* 角を丸める */
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .delete-btn:hover {
+            background-color: #e0e0e0; /* ホバーでちょっと濃く */
+        }
+
+
+.delete-btn:hover {
+    background: #c0392b;
+}
+>>>>>>> Stashed changes
     </style>
 </head>
 <body>
@@ -290,8 +398,10 @@
         
         <!-- トピック詳細ページ -->
         <div id="detail" class="page">
-            <h2 id="detail-title">トピック詳細</h2>
-            <button onclick="showPage('top')">← 戻る</button>
+            <div class="detail-header">
+                <h2 id="detail-title">トピック詳細</h2>
+                <button onclick="showPage('top')">← 戻る</button>
+            </div>
             <div id="detail-content">
                 <!-- トピック詳細が表示される -->
             </div>
@@ -471,9 +581,15 @@
             postsContainer.innerHTML = '<h3>💬 投稿一覧</h3>';
             
             topic.posts.forEach((post,index) => {
+<<<<<<< Updated upstream
 // 初期化（古いデータにlikesが無い場合の対策）
  if (post.likes === undefined) post.likes = 0;
         if (post.liked === undefined) post.liked = false;
+=======
+        // 初期化（古いデータにlikesが無い場合の対策）
+             if (post.likes === undefined) post.likes = 0;
+             if (post.liked === undefined) post.liked = false;
+>>>>>>> Stashed changes
 
                 const postItem = document.createElement('div');
                 postItem.className = 'post-item';
@@ -481,33 +597,60 @@
         const likedClass = post.liked ? 'liked' : '';
         
         postItem.innerHTML = `
+<<<<<<< Updated upstream
             <p>${post.content}</p>
             <div class="topic-meta">${post.time}</div>
             <button class="${likedClass}" onclick="toggleLike(${topic.id}, ${index})">
                 👍</button>
             <div class="topic-meta">いいね数: ${post.likes}件</div>
+=======
+            <div class="post-content">
+                <p>${post.content}</p>
+            </div>
+            <div class="post-bottom">
+                <div class="post-meta">${post.time}</div>
+                <div class="post-actions">
+                    <span class="like-count">いいね数: ${post.likes}件</span>
+                    <button class="${likedClass}" onclick="toggleLike(${topic.id}, ${index})">👍</button>
+                    <button class="delete-btn" onclick="deletePost(${topic.id}, ${index})">🗑</button>
+                </div>
+            </div>
+>>>>>>> Stashed changes
                 `;
                 postsContainer.appendChild(postItem);
             });
             
             showPage('detail');
         }
+<<<<<<< Updated upstream
+=======
+        // 投稿削除
+        function deletePost(topicId, postIndex) {
+        const topic = topics.find(t => t.id === topicId);
+        if (!topic) return;
+
+        if (confirm("この投稿を削除してもよろしいですか？")) {
+            topic.posts.splice(postIndex, 1); // 該当の投稿を削除
+            showTopicDetail(topicId); // 再描画
+        }
+    }
+>>>>>>> Stashed changes
         // いいね切り替え
         function toggleLike(topicId, postIndex) {
-    const topic = topics.find(t => t.id === topicId);
-    if (!topic) return;
-    const post = topic.posts[postIndex];
-    if (!post) return;
-    
-    if (post.liked) {
-        post.likes--;
-        post.liked = false;
-    } else {
-        post.likes++;
-        post.liked = true;
-    }
-    
-    showTopicDetail(topicId);
+        const topic = topics.find(t => t.id === topicId);
+        if (!topic) return;
+        const post = topic.posts[postIndex];
+        if (!post) return;
+        
+        if (post.liked) {
+            post.likes--;
+            post.liked = false;
+        } else {
+            post.likes++;
+            post.liked = true;
+        }
+        
+        showTopicDetail(topicId);
 }
         // 投稿追加
         function addPost(event) {
