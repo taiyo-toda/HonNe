@@ -565,16 +565,19 @@
             // Add character counter and warning for post textarea
             var postContent = document.getElementById('post-content');
             var charCounter = document.getElementById('char-counter');
-            if (postContent && charCounter) {
+            var submitButton = document.querySelector('#post-form button[type="submit"]');
+            if (postContent && charCounter && submitButton) {
                 postContent.addEventListener('input', function() {
                     var currentLength = postContent.value.length;
                     charCounter.textContent = currentLength + '/20';
                     if (currentLength > 20) {
                         postContent.style.border = '2px solid red';
                         document.getElementById('warning-message').textContent = '20文字以内で入力してください';
+                        submitButton.disabled = true;
                     } else {
                         postContent.style.border = '';
                         document.getElementById('warning-message').textContent = '';
+                        submitButton.disabled = false;
                     }
                 });
             }
