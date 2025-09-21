@@ -53,6 +53,12 @@
             font-size: 14px;
             font-weight: 600;
         }
+      
+        button.liked {
+            background: #253045;
+            color: #bfc0d1;
+            font-weight: bold;
+        }
         
         button:hover {
             background: #00b3d4;
@@ -146,7 +152,7 @@
             font-size: 12px;
             margin: 5px 0;
         }
-        
+      
         /* 追加のスタイル */
         h2, h3 {
             color: #bfc0d1;
@@ -167,6 +173,26 @@
             background: #253045;
             color: #bfc0d1;
         }
+      
+        /* フィルター */
+        .filter-container {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .filter-container label {
+            margin-right: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .filter-container select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -183,7 +209,22 @@
         <!-- トップページ -->
         <div id="top" class="page active">
             <h2>💬 トピック一覧</h2>
+            
             <button onclick="showPage('create')" style="width: 100%; margin: 20px 0;">+ 新しいトピックを作成</button>
+
+            <!-- ドロップダウンフィルター -->
+            <div class="filter-container">
+                <label for="category-filter">カテゴリーで絞り込み: </label>
+                <select id="category-filter" onchange="filterTopicsByCategory()">
+                    <option value="all">全て</option>
+                    <option value="work">💼 仕事</option>
+                    <option value="love">💕 恋愛</option>
+                    <option value="family">👨‍👩‍👧‍👦 家族</option>
+                    <option value="money">💰 お金</option>
+                    <option value="other">🔄 その他</option>
+                </select>
+            </div>
+
             <div id="topic-list">
                 <!-- トピックが動的に追加される -->
             </div>
@@ -248,8 +289,10 @@
             </div>
             <div>
                 <h3>💬 投稿する</h3>
+                <!-- 投稿するフォーム -->
                 <form id="post-form" onsubmit="addPost(event)">
-                    <textarea id="post-content" placeholder="あなたの本音を書いてください" maxlength="500" required></textarea>
+                    <textarea id="post-content" placeholder="あなたの本音を書いてください" maxlength="20" required></textarea>
+                    <div id="char-counter" style="text-align: right; font-size: 12px; color: #666;">0/20</div>
                     <button type="submit">投稿する</button>
                 </form>
             </div>
@@ -416,19 +459,45 @@
             const postsContainer = document.getElementById('posts');
             postsContainer.innerHTML = '<h3>💬 投稿一覧</h3>';
             
-            topic.posts.forEach(post => {
+            topic.posts.forEach((post,index) => {
+// 初期化（古いデータにlikesが無い場合の対策）
+ if (post.likes === undefined) post.likes = 0;
+        if (post.liked === undefined) post.liked = false;
+
                 const postItem = document.createElement('div');
                 postItem.className = 'post-item';
-                postItem.innerHTML = `
-                    <p>${post.content}</p>
-                    <div class="topic-meta">${post.time}</div>
+                // いいね済みなら青いボタン
+        const likedClass = post.liked ? 'liked' : '';
+        
+        postItem.innerHTML = `
+            <p>${post.content}</p>
+            <div class="topic-meta">${post.time}</div>
+            <button class="${likedClass}" onclick="toggleLike(${topic.id}, ${index})">
+                👍</button>
+            <div class="topic-meta">いいね数: ${post.likes}件</div>
                 `;
                 postsContainer.appendChild(postItem);
             });
             
             showPage('detail');
         }
-        
+        // いいね切り替え
+        function toggleLike(topicId, postIndex) {
+    const topic = topics.find(t => t.id === topicId);
+    if (!topic) return;
+    const post = topic.posts[postIndex];
+    if (!post) return;
+    
+    if (post.liked) {
+        post.likes--;
+        post.liked = false;
+    } else {
+        post.likes++;
+        post.liked = true;
+    }
+    
+    showTopicDetail(topicId);
+}
         // 投稿追加
         function addPost(event) {
             event.preventDefault();
@@ -438,7 +507,9 @@
             
             const newPost = {
                 content: content,
-                time: getTime() // getTime()を使用
+                time: getTime(), // getTime()を使用
+                likes:0,
+                liked:false
             };
             
             currentTopic.posts.unshift(newPost);
@@ -463,9 +534,39 @@
             return formattedTime; // 戻り値を追加
         }
         
+        // カテゴリーフィルター
+        function filterTopicsByCategory() {
+            const selectedCategory = document.getElementById('category-filter').value;
+            const filteredTopics = selectedCategory === 'all' ? topics : topics.filter(topic => topic.category === selectedCategory);
+            
+            const list = document.getElementById('topic-list');
+            list.innerHTML = '';
+            
+            filteredTopics.forEach(topic => {
+                const item = document.createElement('div');
+                item.className = 'topic-item';
+                item.onclick = () => showTopicDetail(topic.id);
+                
+                item.innerHTML = `
+                    <div class="topic-title">${categoryIcons[topic.category]} ${topic.title}</div>
+                    <div class="topic-meta">${topic.posts.length}件の投稿 • ${topic.time}</div>
+                `;
+                
+                list.appendChild(item);
+            });
+        }
+        
         // 初期化
         document.addEventListener('DOMContentLoaded', function() {
             displayTopics();
+            // Add character counter for post textarea
+            var postContent = document.getElementById('post-content');
+            var charCounter = document.getElementById('char-counter');
+            if (postContent && charCounter) {
+                postContent.addEventListener('input', function() {
+                    charCounter.textContent = postContent.value.length + '/20';
+                });
+            }
         });
         // ...existing code...
                 // トピック作成
