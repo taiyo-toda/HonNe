@@ -478,31 +478,31 @@
                 <div class="topic-meta">${categoryIcons[topic.category]} ${topic.category} • ${topic.time}</div>
             `;
             
-            // 投稿一覧表示
             const postsContainer = document.getElementById('posts');
             postsContainer.innerHTML = '<h3>💬 投稿一覧</h3>';
             
-            topic.posts.forEach((post,index) => {
-// 初期化（古いデータにlikesが無い場合の対策）
-             if (post.likes === undefined) post.likes = 0;
-             if (post.liked === undefined) post.liked = false;
+            // 追加要件: 投稿が1件もない場合のメッセージを表示する
+            if (topic.posts.length === 0) {
+                postsContainer.innerHTML += '<p>まだこのトピックに対する投稿はありません</p>';
+            } else {
+                topic.posts.forEach((post, index) => {
+                    if (post.likes === undefined) post.likes = 0;
+                    if (post.liked === undefined) post.liked = false;
+                    
+                    const postItem = document.createElement('div');
+                    postItem.className = 'post-item';
+                    const likedClass = post.liked ? 'liked' : '';
+                    postItem.innerHTML = `
+                        <p>${post.content}</p>
+                        <div class="topic-meta">${post.time}</div>
+                        <button class="${likedClass}" onclick="toggleLike(${topic.id}, ${index})">👍</button>
+                        <div class="topic-meta">いいね数: ${post.likes}件</div>
+                        <button class="delete-btn" onclick="deletePost(${topic.id}, ${index})">🗑 削除</button>
+                    `;
+                    postsContainer.appendChild(postItem);
+                });
+            }
 
-                const postItem = document.createElement('div');
-                postItem.className = 'post-item';
-                // いいね済みなら青いボタン
-        const likedClass = post.liked ? 'liked' : '';
-        
-        postItem.innerHTML = `
-            <p>${post.content}</p>
-            <div class="topic-meta">${post.time}</div>
-            <button class="${likedClass}" onclick="toggleLike(${topic.id}, ${index})">
-                👍</button>
-            <div class="topic-meta">いいね数: ${post.likes}件</div>
-            <button class="delete-btn" onclick="deletePost(${topic.id}, ${index})">🗑 削除</button>
-                `;
-                postsContainer.appendChild(postItem);
-            });
-            
             showPage('detail');
         }
         // 投稿削除
