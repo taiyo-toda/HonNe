@@ -43,7 +43,7 @@
         
         /* ボタンスタイル */
         button {
-            background: #213f55;
+            background: #1288ac;
             color: #ededf8;
             border: none;
             padding: 10px 20px;
@@ -55,13 +55,8 @@
         }
       
         button.liked {
-<<<<<<< Updated upstream
-            background: 00b3d4;
-            color: #bfc0d1;
-=======
             background: #00c6e6;
             color: #191e2b;
->>>>>>> Stashed changes
             font-weight: bold;
         }
         
@@ -234,18 +229,18 @@
             flex-shrink: 0;
         }
         
-        /* detail-contentのレイアウト */
+        /* detail-contentの左右配置 */
         #detail-content {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 20px;
-            gap: 20px;
         }
         
         #detail-content p {
             flex: 1;
             margin: 0;
+            padding-right: 20px;
         }
         
         #detail-content .topic-meta {
@@ -264,33 +259,22 @@
             margin: 10px 0;
             display: flex;
             align-items: center;
-<<<<<<< Updated upstream
             flex-wrap: nowrap;
         }
         
         .filter-container label {
             margin-right: 20px;
             font-size: 15px;
-=======
-            flex-wrap: nowrap; /* 折り返しを禁止する */
-        }
-        
-        .filter-container label {
-            font-size: 16px;
->>>>>>> Stashed changes
             color: #bfc0d1;
             white-space: nowrap;
         }
         
         .filter-container select {
-            padding: 8px;
-            margin-left: 3rem;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 14px;
         }
-<<<<<<< Updated upstream
-=======
         .delete-btn {
             font-size: 12px;         /* 小さめ文字 */
             padding: 2px 6px;        /* コンパクトな余白 */
@@ -311,7 +295,6 @@
 .delete-btn:hover {
     background: #c0392b;
 }
->>>>>>> Stashed changes
     </style>
 </head>
 <body>
@@ -412,8 +395,9 @@
                 <h3>💬 投稿する</h3>
                 <!-- 投稿するフォーム -->
                 <form id="post-form" onsubmit="addPost(event)">
-                    <textarea id="post-content" placeholder="あなたの本音を書いてください" maxlength="20" required></textarea>
+                    <textarea id="post-content" placeholder="あなたの本音を書いてください" required></textarea>
                     <div id="char-counter" style="text-align: right; font-size: 12px; color: #666;">0/20</div>
+                    <div id="warning-message" style="color: red; font-size: 12px;"></div>
                     <button type="submit">投稿する</button>
                 </form>
             </div>
@@ -581,15 +565,9 @@
             postsContainer.innerHTML = '<h3>💬 投稿一覧</h3>';
             
             topic.posts.forEach((post,index) => {
-<<<<<<< Updated upstream
-// 初期化（古いデータにlikesが無い場合の対策）
- if (post.likes === undefined) post.likes = 0;
-        if (post.liked === undefined) post.liked = false;
-=======
         // 初期化（古いデータにlikesが無い場合の対策）
              if (post.likes === undefined) post.likes = 0;
              if (post.liked === undefined) post.liked = false;
->>>>>>> Stashed changes
 
                 const postItem = document.createElement('div');
                 postItem.className = 'post-item';
@@ -597,13 +575,6 @@
         const likedClass = post.liked ? 'liked' : '';
         
         postItem.innerHTML = `
-<<<<<<< Updated upstream
-            <p>${post.content}</p>
-            <div class="topic-meta">${post.time}</div>
-            <button class="${likedClass}" onclick="toggleLike(${topic.id}, ${index})">
-                👍</button>
-            <div class="topic-meta">いいね数: ${post.likes}件</div>
-=======
             <div class="post-content">
                 <p>${post.content}</p>
             </div>
@@ -615,15 +586,12 @@
                     <button class="delete-btn" onclick="deletePost(${topic.id}, ${index})">🗑</button>
                 </div>
             </div>
->>>>>>> Stashed changes
                 `;
                 postsContainer.appendChild(postItem);
             });
             
             showPage('detail');
         }
-<<<<<<< Updated upstream
-=======
         // 投稿削除
         function deletePost(topicId, postIndex) {
         const topic = topics.find(t => t.id === topicId);
@@ -634,7 +602,6 @@
             showTopicDetail(topicId); // 再描画
         }
     }
->>>>>>> Stashed changes
         // いいね切り替え
         function toggleLike(topicId, postIndex) {
         const topic = topics.find(t => t.id === topicId);
@@ -662,14 +629,16 @@
             const newPost = {
                 content: content,
                 time: getTime(), // getTime()を使用
-                likes:0,
-                liked:false
+                likes: 0,
+                liked: false
             };
             
             currentTopic.posts.unshift(newPost);
             
             // フォームリセット
             document.getElementById('post-content').value = '';
+            // 文字数カウンタをリセット
+            document.getElementById('char-counter').textContent = '0/20';
             
             // 詳細ページを再表示
             showTopicDetail(currentTopic.id);
@@ -713,12 +682,23 @@
         // 初期化
         document.addEventListener('DOMContentLoaded', function() {
             displayTopics();
-            // Add character counter for post textarea
+            // Add character counter and warning for post textarea
             var postContent = document.getElementById('post-content');
             var charCounter = document.getElementById('char-counter');
-            if (postContent && charCounter) {
+            var submitButton = document.querySelector('#post-form button[type="submit"]');
+            if (postContent && charCounter && submitButton) {
                 postContent.addEventListener('input', function() {
-                    charCounter.textContent = postContent.value.length + '/20';
+                    var currentLength = postContent.value.length;
+                    charCounter.textContent = currentLength + '/20';
+                    if (currentLength > 20) {
+                        postContent.style.border = '2px solid red';
+                        document.getElementById('warning-message').textContent = '20文字以内で入力してください';
+                        submitButton.disabled = true;
+                    } else {
+                        postContent.style.border = '';
+                        document.getElementById('warning-message').textContent = '';
+                        submitButton.disabled = false;
+                    }
                 });
             }
         });
