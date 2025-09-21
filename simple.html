@@ -311,8 +311,9 @@
                 <h3>💬 投稿する</h3>
                 <!-- 投稿するフォーム -->
                 <form id="post-form" onsubmit="addPost(event)">
-                    <textarea id="post-content" placeholder="あなたの本音を書いてください" maxlength="20" required></textarea>
+                    <textarea id="post-content" placeholder="あなたの本音を書いてください" required></textarea>
                     <div id="char-counter" style="text-align: right; font-size: 12px; color: #666;">0/20</div>
+                    <div id="warning-message" style="color: red; font-size: 12px;"></div>
                     <button type="submit">投稿する</button>
                 </form>
             </div>
@@ -539,14 +540,16 @@ function deletePost(topicId, postIndex) {
             const newPost = {
                 content: content,
                 time: getTime(), // getTime()を使用
-                likes:0,
-                liked:false
+                likes: 0,
+                liked: false
             };
             
             currentTopic.posts.unshift(newPost);
             
             // フォームリセット
             document.getElementById('post-content').value = '';
+            // 文字数カウンタをリセット
+            document.getElementById('char-counter').textContent = '0/20';
             
             // 詳細ページを再表示
             showTopicDetail(currentTopic.id);
@@ -590,12 +593,23 @@ function deletePost(topicId, postIndex) {
         // 初期化
         document.addEventListener('DOMContentLoaded', function() {
             displayTopics();
-            // Add character counter for post textarea
+            // Add character counter and warning for post textarea
             var postContent = document.getElementById('post-content');
             var charCounter = document.getElementById('char-counter');
-            if (postContent && charCounter) {
+            var submitButton = document.querySelector('#post-form button[type="submit"]');
+            if (postContent && charCounter && submitButton) {
                 postContent.addEventListener('input', function() {
-                    charCounter.textContent = postContent.value.length + '/20';
+                    var currentLength = postContent.value.length;
+                    charCounter.textContent = currentLength + '/20';
+                    if (currentLength > 20) {
+                        postContent.style.border = '2px solid red';
+                        document.getElementById('warning-message').textContent = '20文字以内で入力してください';
+                        submitButton.disabled = true;
+                    } else {
+                        postContent.style.border = '';
+                        document.getElementById('warning-message').textContent = '';
+                        submitButton.disabled = false;
+                    }
                 });
             }
         });
