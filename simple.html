@@ -14,21 +14,21 @@
         
         body {
             font-family: Arial, sans-serif;
-            background: #f0f2f5;
+            background: #191e2b;
             padding: 20px;
         }
         
         .container {
             max-width: 600px;
             margin: 0 auto;
-            background: white;
+            background: #253045;
             border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
         
         h1 {
-            color: #333;
+            color: #bfc0d1;
             margin-bottom: 20px;
             text-align: center;
         }
@@ -43,22 +43,24 @@
         
         /* ボタンスタイル */
         button {
-            background: #4267B2;
-            color: white;
+            background: #00c6e6;
+            color: #191e2b;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
             margin: 5px;
             font-size: 14px;
+            font-weight: 600;
         }
         
         button:hover {
-            background: #365899;
+            background: #00b3d4;
         }
         
         button:disabled {
-            background: #ccc;
+            background: #bfc0d1;
+            color: #253045;
             cursor: not-allowed;
         }
         
@@ -67,9 +69,17 @@
             width: 100%;
             padding: 10px;
             margin: 10px 0;
-            border: 1px solid #ddd;
+            border: 1px solid #bfc0d1;
             border-radius: 5px;
             font-size: 14px;
+            background: #191e2b;
+            color: #bfc0d1;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #00c6e6;
+            box-shadow: 0 0 0 2px rgba(0, 198, 230, 0.2);
         }
         
         textarea {
@@ -79,27 +89,30 @@
         
         /* トピックリスト */
         .topic-item {
-            border: 1px solid #ddd;
+            border: 1px solid #bfc0d166;
             padding: 15px;
             margin: 10px 0;
             border-radius: 5px;
-            background: #f9f9f9;
+            background: #191e2b;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
         
         .topic-item:hover {
-            background: #e3f2fd;
+            background: rgba(0, 198, 230, 0.1);
+            border-color: #00c6e6;
         }
         
         .topic-title {
             font-weight: bold;
-            color: #333;
+            color: #bfc0d1;
             margin-bottom: 5px;
         }
         
         .topic-meta {
             font-size: 12px;
-            color: #666;
+            color: #bfc0d1;
+            opacity: 0.7;
         }
         
         /* 検索 */
@@ -109,10 +122,12 @@
         
         /* 投稿リスト */
         .post-item {
-            border-left: 3px solid #4267B2;
+            border-left: 3px solid #00c7e68b;
             padding: 10px;
             margin: 10px 0;
-            background: #f8f9fa;
+            background: rgba(0, 198, 230, 0.05);
+            border-radius: 5px;
+            color: #bfc0d1;
         }
         
         .nav-buttons {
@@ -121,21 +136,42 @@
         }
         
         .error {
-            color: red;
+            color: #ff6b6b;
             font-size: 12px;
             margin: 5px 0;
         }
         
         .success {
-            color: green;
+            color: #00c6e6;
             font-size: 12px;
             margin: 5px 0;
+        }
+        
+        /* 追加のスタイル */
+        h2, h3 {
+            color: #bfc0d1;
+        }
+        
+        label {
+            color: #bfc0d1;
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        p {
+            color: #bfc0d1;
+        }
+        
+        option {
+            background: #253045;
+            color: #bfc0d1;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🗣️ 本音SNS</h1>
+        <h1>🗣️ 本音で語ろうぜ！</h1>
         
         <!-- ナビゲーション -->
         <div class="nav-buttons">
@@ -229,10 +265,10 @@
                 description: "リモートワークの本音を語りましょう",
                 category: "work",
                 posts: [
-                    { content: "思ったより孤独感がある...", time: "5分前" },
-                    { content: "通勤時間がなくなって良い面もある", time: "10分前" }
+                    { content: "思ったより孤独感がある...", time: "2025/09/21 14:16:35" },
+                    { content: "通勤時間がなくなって良い面もある", time: "2025/09/21 14:11:35" }
                 ],
-                time: "2時間前"
+                time: "2025/09/21 12:21:35"
             },
             {
                 id: 2,
@@ -240,9 +276,9 @@
                 description: "結婚制度についてどう思いますか",
                 category: "family",
                 posts: [
-                    { content: "価値観の多様化で難しい", time: "1時間前" }
+                    { content: "価値観の多様化で難しい", time: "2025/09/21 13:21:35" }
                 ],
-                time: "5時間前"
+                time: "2025/09/21 09:21:35"
             }
         ];
         
@@ -312,7 +348,7 @@
                 description: description,
                 category: category,
                 posts: [],
-                time: "たった今"
+                time: getTime() // getTime()を使用
             };
             
             topics.unshift(newTopic);
@@ -402,7 +438,7 @@
             
             const newPost = {
                 content: content,
-                time: "たった今"
+                time: getTime() // getTime()を使用
             };
             
             currentTopic.posts.unshift(newPost);
@@ -413,11 +449,63 @@
             // 詳細ページを再表示
             showTopicDetail(currentTopic.id);
         }
+
+        function getTime() { // 現在時刻の取得
+            let date = new Date(); // 変数名を修正
+
+            // YYYY/MM/DD HH:MM:SSへ変換
+            var formattedTime = date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2) +
+             '/' +('0' + date.getDate()).slice(-2) + ' ' +  
+             ('0' + date.getHours()).slice(-2) + ':' + 
+             ('0' + date.getMinutes()).slice(-2) + ':' + 
+             ('0' + date.getSeconds()).slice(-2);
+
+            return formattedTime; // 戻り値を追加
+        }
         
         // 初期化
         document.addEventListener('DOMContentLoaded', function() {
             displayTopics();
         });
+        // ...existing code...
+                // トピック作成
+                function createTopic(event) {
+                    event.preventDefault();
+                    
+                    const title = document.getElementById('title').value.trim();
+                    const description = document.getElementById('description').value.trim();
+                    const category = document.getElementById('category').value;
+                    
+                    // バリデーション
+                    if (!title || !category) {
+                        document.getElementById('form-error').textContent = 'タイトルとカテゴリーは必須です';
+                        return;
+                    }
+                    
+                    // 新しいトピック追加
+                    const newTopic = {
+                        id: nextId++,
+                        title: title,
+                        description: description,
+                        category: category,
+                        posts: [],
+                        time: getTime() // getTime()を使用
+                    };
+                    
+                    topics.unshift(newTopic);
+                    
+                    // フォームリセット
+                    document.getElementById('create-form').reset();
+                    document.getElementById('form-error').textContent = '';
+                    document.getElementById('form-success').textContent = 'トピックが作成されました！';
+                    
+                    // トップページに戻る
+                    setTimeout(() => {
+                        showPage('top');
+                        document.getElementById('form-success').textContent = '';
+                    }, 1500);
+                }
+        // ...existing code...
     </script>
 </body>
 </html>
