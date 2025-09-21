@@ -178,23 +178,20 @@
         .filter-container {
             margin: 10px 0;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
+            gap: 10px;
+            /* 下記で左右の要素が均等な幅を持つように設定 */
         }
         
-        .filter-container label {
-            margin-right: 20px;
-            font-size: 15px;
-            color: #bfc0d1;
-            white-space: nowrap;
-        }
-        
+        .filter-container label,
         .filter-container select {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
+            flex: 1 1 45%;
+            font-size: 14px; /* 必要ならさらに小さく調整可能 */
+            text-align: center;
         }
+        
         .delete-btn {
     font-size: 12px;         /* 小さめ文字 */
     padding: 2px 6px;        /* コンパクトな余白 */
