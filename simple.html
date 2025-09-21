@@ -57,10 +57,13 @@
         button.liked {
             background: #00c6e6;
             color: #191e2b;
+            background: #00c6e6;
+            color: #191e2b;
             font-weight: bold;
         }
         
         button:hover {
+            background: #00b4d496;
             background: #00b4d496;
         }
         
@@ -130,10 +133,49 @@
         .post-item {
             border-left: 3px solid #00c6e6;
             padding:15px 10px 5px 10px ;
+            border-left: 3px solid #00c6e6;
+            padding:15px 10px 5px 10px ;
             margin: 10px 0;
             background: rgba(0, 198, 230, 0.05);
             border-radius: 5px;
             color: #bfc0d1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .post-content {
+            margin-bottom: 8px;
+        }
+        
+        .post-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        
+        .post-meta {
+            font-size: 12px;
+            color: #bfc0d1;
+            opacity: 0.7;
+        }
+        
+        .post-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .post-item button {
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+        
+        .like-count {
+            font-size: 12px;
+            color: #bfc0d1;
+            opacity: 0.8;
             display: flex;
             flex-direction: column;
             position: relative;
@@ -286,7 +328,20 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
+            font-size: 12px;         /* 小さめ文字 */
+            padding: 2px 6px;        /* コンパクトな余白 */
+            margin-left: 8px;
+            background-color: #f0f0f0; /* 優しい薄いグレー */
+            color: #555;             /* 濃すぎない文字色 */
+            border: 1px solid #ccc;  /* 薄い枠線 */
+            border-radius: 6px;      /* 角を丸める */
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
 
+        .delete-btn:hover {
+            background-color: #e0e0e0; /* ホバーでちょっと濃く */
+        }
         .delete-btn:hover {
             background-color: #e0e0e0; /* ホバーでちょっと濃く */
         }
@@ -381,6 +436,10 @@
         
         <!-- トピック詳細ページ -->
         <div id="detail" class="page">
+            <div class="detail-header">
+                <h2 id="detail-title">トピック詳細</h2>
+                <button onclick="showPage('top')">← 戻る</button>
+            </div>
             <div class="detail-header">
                 <h2 id="detail-title">トピック詳細</h2>
                 <button onclick="showPage('top')">← 戻る</button>
@@ -566,6 +625,7 @@
             
             topic.posts.forEach((post,index) => {
         // 初期化（古いデータにlikesが無い場合の対策）
+        // 初期化（古いデータにlikesが無い場合の対策）
              if (post.likes === undefined) post.likes = 0;
              if (post.liked === undefined) post.liked = false;
 
@@ -575,6 +635,17 @@
         const likedClass = post.liked ? 'liked' : '';
         
         postItem.innerHTML = `
+            <div class="post-content">
+                <p>${post.content}</p>
+            </div>
+            <div class="post-bottom">
+                <div class="post-meta">${post.time}</div>
+                <div class="post-actions">
+                    <span class="like-count">いいね数: ${post.likes}件</span>
+                    <button class="${likedClass}" onclick="toggleLike(${topic.id}, ${index})">👍</button>
+                    <button class="delete-btn" onclick="deletePost(${topic.id}, ${index})">🗑</button>
+                </div>
+            </div>
             <div class="post-content">
                 <p>${post.content}</p>
             </div>
@@ -596,7 +667,15 @@
         function deletePost(topicId, postIndex) {
         const topic = topics.find(t => t.id === topicId);
         if (!topic) return;
+        function deletePost(topicId, postIndex) {
+        const topic = topics.find(t => t.id === topicId);
+        if (!topic) return;
 
+        if (confirm("この投稿を削除してもよろしいですか？")) {
+            topic.posts.splice(postIndex, 1); // 該当の投稿を削除
+            showTopicDetail(topicId); // 再描画
+        }
+    }
         if (confirm("この投稿を削除してもよろしいですか？")) {
             topic.posts.splice(postIndex, 1); // 該当の投稿を削除
             showTopicDetail(topicId); // 再描画
@@ -604,6 +683,20 @@
     }
         // いいね切り替え
         function toggleLike(topicId, postIndex) {
+        const topic = topics.find(t => t.id === topicId);
+        if (!topic) return;
+        const post = topic.posts[postIndex];
+        if (!post) return;
+        
+        if (post.liked) {
+            post.likes--;
+            post.liked = false;
+        } else {
+            post.likes++;
+            post.liked = true;
+        }
+        
+        showTopicDetail(topicId);
         const topic = topics.find(t => t.id === topicId);
         if (!topic) return;
         const post = topic.posts[postIndex];
