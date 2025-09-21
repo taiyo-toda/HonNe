@@ -508,14 +508,16 @@
             const newPost = {
                 content: content,
                 time: getTime(), // getTime()を使用
-                likes:0,
-                liked:false
+                likes: 0,
+                liked: false
             };
             
             currentTopic.posts.unshift(newPost);
             
             // フォームリセット
             document.getElementById('post-content').value = '';
+            // 文字数カウンタをリセット
+            document.getElementById('char-counter').textContent = '0/20';
             
             // 詳細ページを再表示
             showTopicDetail(currentTopic.id);
