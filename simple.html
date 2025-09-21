@@ -131,7 +131,13 @@
             font-size: 12px;
             margin: 5px 0;
         }
-        
+      
+        button.liked {
+        background: #1877f2; /* Facebookっぽい青 */
+        color: white;
+        font-weight: bold;
+        }
+      
         /* フィルター */
         .filter-container {
             margin: 20px 0;
@@ -151,6 +157,7 @@
             border-radius: 5px;
             font-size: 14px;
         }
+      
     </style>
 </head>
 <body>
@@ -415,19 +422,45 @@
             const postsContainer = document.getElementById('posts');
             postsContainer.innerHTML = '<h3>💬 投稿一覧</h3>';
             
-            topic.posts.forEach(post => {
+            topic.posts.forEach((post,index) => {
+// 初期化（古いデータにlikesが無い場合の対策）
+ if (post.likes === undefined) post.likes = 0;
+        if (post.liked === undefined) post.liked = false;
+
                 const postItem = document.createElement('div');
                 postItem.className = 'post-item';
-                postItem.innerHTML = `
-                    <p>${post.content}</p>
-                    <div class="topic-meta">${post.time}</div>
+                // いいね済みなら青いボタン
+        const likedClass = post.liked ? 'liked' : '';
+        
+        postItem.innerHTML = `
+            <p>${post.content}</p>
+            <div class="topic-meta">${post.time}</div>
+            <button class="${likedClass}" onclick="toggleLike(${topic.id}, ${index})">
+                👍</button>
+            <div class="topic-meta">いいね数: ${post.likes}件</div>
                 `;
                 postsContainer.appendChild(postItem);
             });
             
             showPage('detail');
         }
-        
+        // いいね切り替え
+        function toggleLike(topicId, postIndex) {
+    const topic = topics.find(t => t.id === topicId);
+    if (!topic) return;
+    const post = topic.posts[postIndex];
+    if (!post) return;
+    
+    if (post.liked) {
+        post.likes--;
+        post.liked = false;
+    } else {
+        post.likes++;
+        post.liked = true;
+    }
+    
+    showTopicDetail(topicId);
+}
         // 投稿追加
         function addPost(event) {
             event.preventDefault();
@@ -437,7 +470,9 @@
             
             const newPost = {
                 content: content,
-                time: "たった今"
+                time: "たった今",
+                likes:0,
+                liked:false
             };
             
             currentTopic.posts.unshift(newPost);
