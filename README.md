@@ -63,7 +63,7 @@ HonNe/
 3. ローカルサーバーを起動する
 重要: このアプリはJSONファイルを読み込むため、ローカルサーバーでの実行が必要です。
 
-## 方法1: Pythonを使用（推奨）
+## 方法1: Pythonを使用
 
 ### Python 3の場合
 * python -m http.server 8000
@@ -80,7 +80,7 @@ npx http-server -p 8000
 npm install -g http-server
 http-server -p 8000
 
-## 方法3: Live Server（VS Code拡張機能）
+## 方法3: Live Server（VS Code拡張機能）（推奨）
 
 VS Codeで「Live Server」拡張機能をインストール
 simple.htmlを右クリック → 「Open with Live Server」
