@@ -50,20 +50,20 @@
 ## 🚀 実行方法
 このプロジェクトを自分のPCで動かすための手順を説明します。
 
-1. プロジェクトファイルを取得する
+## 1. プロジェクトファイルを取得する
 git clone https://github.com/taiyo-toda/HonNe.git
 cd HonNe
 
-2. 必要なファイルが揃っているか確認する
+## 2. 必要なファイルが揃っているか確認する
 プロジェクトフォルダに以下のファイルがあることを確認してください：
 HonNe/
 ├── simple.html      # メインのHTMLファイル
 └── topics.json      # トピックデータファイル
 
-3. ローカルサーバーを起動する
+## 3. ローカルサーバーを起動する
 重要: このアプリはJSONファイルを読み込むため、ローカルサーバーでの実行が必要です。
 
-## 方法1: Pythonを使用
+### 方法1: Pythonを使用
 
 ### Python 3の場合
 * python -m http.server 8000
@@ -71,7 +71,7 @@ HonNe/
 ### Python 2の場合
 * python -m SimpleHTTPServer 8000
 
-## 方法2: Node.jsを使用
+### 方法2: Node.jsを使用
 
 * npx（Node.js付属）を使用
 npx http-server -p 8000
@@ -80,15 +80,15 @@ npx http-server -p 8000
 npm install -g http-server
 http-server -p 8000
 
-## 方法3: Live Server（VS Code拡張機能）（推奨）
+### 方法3: Live Server（VS Code拡張機能）（推奨）
 
 VS Codeで「Live Server」拡張機能をインストール
 simple.htmlを右クリック → 「Open with Live Server」
 
-4. ブラウザでアクセスする
+## 4. ブラウザでアクセスする
 サーバー起動後、以下のURLにアクセス：
 
-5. 動作確認
+## 5. 動作確認
 正常に動作している場合：
 
 ✅ トピック一覧が表示される
