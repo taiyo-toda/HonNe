@@ -41,33 +41,68 @@
             display: block;
         }
         
-        /* ボタンスタイル */
+        /* 改善されたボタンスタイル */
         button {
-            background: #213f55;
-            color: #ededf8;
+            background: #3a5470;  /* より濃いベース色 */
+            color: #ffffff;       /* 純白でコントラスト向上 */
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            border-radius: 8px;
             cursor: pointer;
             margin: 5px;
             font-size: 14px;
             font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
       
-        button.liked {
-            background: #00c6e6;
-            color: #191e2b;
-            font-weight: bold;
-        }
-        
         button:hover {
-            background: #00b4d496;
+            background: #4a6280;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
         
-        button:disabled {
-            background: #bfc0d1;
-            color: #253045;
-            cursor: not-allowed;
+        /* プライマリーボタン（重要なアクション） */
+        .primary-btn, button[type="submit"] {
+            background: linear-gradient(135deg, #00c6e6, #0099cc);
+            color: #ffffff;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 198, 230, 0.3);
+        }
+
+        .primary-btn:hover, button[type="submit"]:hover {
+            background: linear-gradient(135deg, #00b4d4, #0088bb);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 198, 230, 0.4);
+        }
+
+        /* セカンダリーボタン */
+        .secondary-btn {
+            background: transparent;
+            color: #00c6e6;
+            border: 2px solid #00c6e6;
+        }
+        
+        .secondary-btn:hover {
+            background: rgba(0, 198, 230, 0.1);
+            color: #00c6e6;
+        }
+        
+        /* 危険なアクション（削除など） */
+        .danger-btn {
+            background: #ff4757;
+            color: #ffffff;
+        }
+
+        .danger-btn:hover {
+            background: #ff3742;
+        }
+        
+        button.liked {
+            background: linear-gradient(135deg, #00c6e6, #0099cc);
+            color: #ffffff;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 198, 230, 0.4);
         }
         
         /* フォーム */
@@ -128,6 +163,12 @@
             cursor: pointer;
         }
         
+        #category-filter:hover, #sort-selector:hover {
+            border-color: #00c6e6;
+            box-shadow: 0 0 0 2px rgba(0, 198, 230, 0.2);
+            animation: pulse 1s infinite;
+        }
+
         /* 検索 */
         .search-box {
             margin: 20px 0;
@@ -172,6 +213,11 @@
         .post-item button {
             font-size: 12px;
             padding: 6px 12px;
+        }
+
+        #posts {
+            padding-top: 10px;
+            border-top: 1px solid #bfc0d144;
         }
         
         .like-count {
@@ -312,6 +358,163 @@
             background-color: #ccccccbd; /* ホバーでちょっと濃く */
 
         }
+        
+        /* フローティング投稿ボタン */
+        .floating-post-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #00c6e6, #0099cc);
+            color: #ffffff;
+            border: none;
+            border-radius: 50px;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 198, 230, 0.4);
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .floating-post-btn:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 198, 230, 0.6);
+        }
+
+        /* 投稿フォームモーダル */
+        .post-form-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .post-form-container.hidden {
+            display: none;
+        }
+
+        .post-form-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(25, 30, 43, 0.8);
+            backdrop-filter: blur(4px);
+        }
+
+        .post-form-modal {
+            background: #253045;
+            border-radius: 16px;
+            padding: 24px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: slideUp 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .post-form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .post-form-header h3 {
+            margin: 0;
+            color: #00c6e6;
+        }
+
+        .close-btn {
+            background: transparent;
+            color: #bfc0d1;
+            border: none;
+            font-size: 20px;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: rgba(191, 192, 209, 0.1);
+        }
+
+        .post-form-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+        }
+
+        .post-form-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .cancel-btn {
+            background: transparent;
+            color: #bfc0d1;
+            border: 1px solid #bfc0d1;
+            padding: 8px 16px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #00c6e6, #0099cc);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+        }
+
+        #warning-message {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 10px;
+            height: 16px;
+        }
+
+        /* アニメーション */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* 投稿削除 */
+        .delete-btn {
+            background: #ff4757 !important;
+            color: #ffffff !important;
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: none;
+        }
+
+        .delete-btn:hover {
+            background: #ff3742 !important;
+        }
     </style>
 </head>
 <body>
@@ -408,25 +611,46 @@
         
         <!-- トピック詳細ページ -->
         <div id="detail" class="page">
-            <div class="detail-header">
-                <h2 id="detail-title">トピック詳細</h2>
-                <button onclick="showPage('top')">← 戻る</button>
+            <!-- パンくずリスト -->
+            <div class="breadcrumb" style="margin-bottom: 15px; font-size: 14px; color: #bfc0d1;">
+                <span onclick="showPage('top')" style="cursor: pointer; text-decoration: underline;">🏠 トップ</span>
+                <span style="margin: 0 5px;">›</span>
+                <span id="detail-title-breadcrumb">トピック詳細</span>
             </div>
+            
+            <h2 id="detail-title">トピック詳細</h2>
             <div id="detail-content">
                 <!-- トピック詳細が表示される -->
             </div>
             <div id="posts">
                 <!-- 投稿一覧 -->
             </div>
-            <div>
-                <h3>💬 投稿する</h3>
-                <!-- 投稿するフォーム -->
-                <form id="post-form" onsubmit="addPost(event)">
-                    <textarea id="post-content" placeholder="あなたの本音を書いてください" required></textarea>
-                    <div id="char-counter" style="text-align: right; font-size: 12px; color: #666;">0/20</div>
-                    <div id="warning-message" style="color: red; font-size: 12px;"></div>
-                    <button type="submit">投稿する</button>
-                </form>
+            
+            <!-- フローティング投稿ボタン -->
+            <button id="floating-post-btn" class="floating-post-btn" onclick="togglePostForm()">
+                💬 本音を投稿
+            </button>
+            
+            <!-- 投稿フォーム（初期は非表示） -->
+            <div id="post-form-container" class="post-form-container hidden">
+                <div class="post-form-overlay" onclick="hidePostForm()"></div>
+                <div class="post-form-modal">
+                    <div class="post-form-header">
+                        <h3>💬 あなたの本音は？</h3>
+                        <button onclick="hidePostForm()" class="close-btn">✕</button>
+                    </div>
+                    <form id="post-form" onsubmit="addPost(event)">
+                        <textarea id="post-content" placeholder="本音を書いてください..." required></textarea>
+                        <div class="post-form-footer">
+                            <div id="char-counter">0/20</div>
+                            <div class="post-form-actions">
+                                <button type="button" onclick="hidePostForm()" class="cancel-btn">キャンセル</button>
+                                <button type="submit" class="submit-btn">投稿する</button>
+                            </div>
+                        </div>
+                        <div id="warning-message" class="warning"></div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -674,67 +898,80 @@ function deletePost(topicId, postIndex) {
         
         showTopicDetail(topicId);
 }
-        // 投稿追加
-        function addPost(event) {
-            event.preventDefault();
-            
-            const content = document.getElementById('post-content').value.trim();
-            if (!content || !currentTopic) return;
-            
-            const newPost = {
-                content: content,
-                time: getTime(), // getTime()を使用
-                likes: 0,
-                liked: false
-            };
-            
-            currentTopic.posts.unshift(newPost);
-            
-            // フォームリセット
-            document.getElementById('post-content').value = '';
-            // 文字数カウンタをリセット
-            document.getElementById('char-counter').textContent = '0/20';
-            
-            // 詳細ページを再表示
-            showTopicDetail(currentTopic.id);
-        }
+        // 投稿フォームの表示/非表示
+function togglePostForm() {
+    const container = document.getElementById('post-form-container');
+    container.classList.remove('hidden');
+    document.getElementById('post-content').focus();
+}
 
-        function getTime() { // 現在時刻の取得
-            let date = new Date(); // 変数名を修正
+function hidePostForm() {
+    const container = document.getElementById('post-form-container');
+    container.classList.add('hidden');
+    // フォームをリセット
+    document.getElementById('post-content').value = '';
+    document.getElementById('char-counter').textContent = '0/20';
+}
 
-            // YYYY/MM/DD HH:MM:SSへ変換
-            var formattedTime = date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2) +
-             '/' +('0' + date.getDate()).slice(-2) + ' ' +  
-             ('0' + date.getHours()).slice(-2) + ':' + 
-             ('0' + date.getMinutes()).slice(-2) + ':' + 
-             ('0' + date.getSeconds()).slice(-2);
+// 投稿追加の修正版
+function addPost(event) {
+    event.preventDefault();
+    
+    const content = document.getElementById('post-content').value.trim();
+    if (!content || !currentTopic) return;
+    
+    const newPost = {
+        content: content,
+        time: getTime(),
+        likes: 0,
+        liked: false
+    };
+    
+    currentTopic.posts.unshift(newPost);
+    
+    // フォームを隠す
+    hidePostForm();
+    
+    // 詳細ページを再表示
+    showTopicDetail(currentTopic.id);
+}
 
-            return formattedTime; // 戻り値を追加
-        }
+function getTime() { // 現在時刻の取得
+    let date = new Date(); // 変数名を修正
+
+    // YYYY/MM/DD HH:MM:SSへ変換
+    var formattedTime = date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2) +
+        '/' +('0' + date.getDate()).slice(-2) + ' ' +  
+        ('0' + date.getHours()).slice(-2) + ':' + 
+        ('0' + date.getMinutes()).slice(-2) + ':' + 
+        ('0' + date.getSeconds()).slice(-2);
+
+    return formattedTime; // 戻り値を追加
+}
+
+// カテゴリーフィルター
+function filterTopicsByCategory() {
+    const selectedCategory = document.getElementById('category-filter').value;
+    const filteredTopics = selectedCategory === 'all' ? topics : topics.filter(topic => topic.category === selectedCategory);
+    
+    const list = document.getElementById('topic-list');
+    list.innerHTML = '';
+    
+    filteredTopics.forEach(topic => {
+        const item = document.createElement('div');
+        item.className = 'topic-item';
+        item.onclick = () => showTopicDetail(topic.id);
         
-        // カテゴリーフィルター
-        function filterTopicsByCategory() {
-            const selectedCategory = document.getElementById('category-filter').value;
-            const filteredTopics = selectedCategory === 'all' ? topics : topics.filter(topic => topic.category === selectedCategory);
-            
-            const list = document.getElementById('topic-list');
-            list.innerHTML = '';
-            
-            filteredTopics.forEach(topic => {
-                const item = document.createElement('div');
-                item.className = 'topic-item';
-                item.onclick = () => showTopicDetail(topic.id);
-                
-                item.innerHTML = `
-                    <div class="topic-title">${categoryIcons[topic.category]} ${topic.title}</div>
-                    <div class="topic-meta">${topic.posts.length}件の投稿 • ${topic.time}</div>
-                `;
-                
-                list.appendChild(item);
-            });
-        }
+        item.innerHTML = `
+            <div class="topic-title">${categoryIcons[topic.category]} ${topic.title}</div>
+            <div class="topic-meta">${topic.posts.length}件の投稿 • ${topic.time}</div>
+        `;
         
-        // 新規追加: updateTopicList 関数（カテゴリーと並べ替えの両方に対応）
+        list.appendChild(item);
+    });
+}
+
+// 新規追加: updateTopicList 関数（カテゴリーと並べ替えの両方に対応）
 function updateTopicList() {
     const categoryFilter = document.getElementById('category-filter').value;
     const sortValue = document.getElementById('sort-selector').value;
@@ -778,10 +1015,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add character counter and warning for post textarea
     var postContent = document.getElementById('post-content');
     var charCounter = document.getElementById('char-counter');
+    charCounter.style.color = '#babbcc';
     var submitButton = document.querySelector('#post-form button[type="submit"]');
     if (postContent && charCounter && submitButton) {
         postContent.addEventListener('input', function() {
             var currentLength = postContent.value.length;
+            charCounter.style.color = currentLength > 20 ? 'red' : '#babbcc';
             charCounter.textContent = currentLength + '/20';
             if (currentLength > 20) {
                 postContent.style.border = '2px solid red';
