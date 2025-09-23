@@ -51,13 +51,13 @@
 このプロジェクトを自分のPCで動かすための手順を説明します。
 
 ## 1. プロジェクトファイルを取得する
-git clone https://github.com/taiyo-toda/HonNe.git
+git clone https://github.com/taiyo-toda/HonNe.git <br>
 cd HonNe
 
 ## 2. 必要なファイルが揃っているか確認する
-プロジェクトフォルダに以下のファイルがあることを確認してください：
-HonNe/
-├── simple.html      # メインのHTMLファイル
+プロジェクトフォルダに以下のファイルがあることを確認してください：<br>
+HonNe/ <br>
+├── simple.html      # メインのHTMLファイル <br>
 └── topics.json      # トピックデータファイル
 
 ## 3. ローカルサーバーを起動する
@@ -65,11 +65,11 @@ HonNe/
 
 ### 方法1: Pythonを使用
 
-### Python 3の場合
-* python -m http.server 8000
+* Python 3の場合 <br>
+ python -m http.server 8000
 
-### Python 2の場合
-* python -m SimpleHTTPServer 8000
+* Python 2の場合 <br>
+ python -m SimpleHTTPServer 8000
 
 ### 方法2: Node.jsを使用
 
@@ -86,24 +86,25 @@ VS Codeで「Live Server」拡張機能をインストール
 simple.htmlを右クリック → 「Open with Live Server」
 
 ## 4. ブラウザでアクセスする
-サーバー起動後、以下のURLにアクセス：
+### サーバー起動後、以下のURLにアクセス：<br>
+http://localhost:8000/simple.html
 
 ## 5. 動作確認
 正常に動作している場合：
 
-✅ トピック一覧が表示される
-✅ 新しいトピックを作成できる
-✅ 投稿の追加・いいね・削除ができる
-✅ カテゴリーフィルターと並べ替えが機能する
+✅ トピック一覧が表示される <br>
+✅ 新しいトピックを作成できる <br>
+✅ 投稿の追加・いいね・削除ができる <br>
+✅ カテゴリーフィルターと並べ替えが機能する <br>
 
 ## 📄 ライセンス
 
 このプロジェクトは **MITライセンス** のもとで公開されています。
 
 ### 📋 利用条件
-- ✅ **商用・非商用問わず自由に利用可能**
-- ✅ **改変・再配布OK**
-- ✅ **クレジット表記のみ必要**
+✅ **商用・非商用問わず自由に利用可能** <br>
+✅ **改変・再配布OK** <br>
+✅ **クレジット表記のみ必要** <br>
 
 ### ⚠️ 注意事項
 
