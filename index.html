@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel = "stylesheet" href = "style.css">
+    <title>本音で語ろうぜ</title>
+</head>
+<body>
+    <div class="container">
+        <h1>🗣️ 本音で語ろうぜ！</h1>
+        
+        <!-- ナビゲーション -->
+        <div class="nav-buttons">
+            <button onclick="showPage('top')">トップ</button>
+            <button onclick="showPage('create')">作成</button>
+            <button onclick="showPage('search')">検索</button>
+        </div>
+        
+        <!-- トップページ -->
+        <div id="top" class="page active">
+            <h2>💬 トピック一覧</h2>
+            
+            <button onclick="showPage('create')" style="width: 100%; margin: 20px 0;">+ 新しいトピックを作成</button>
+
+            <!-- ドロップダウンフィルター -->
+            <div class="filter-container">
+                <div class="filter-group">
+                    <label for="category-filter">カテゴリーで絞り込み:</label>
+                    <select id="category-filter" onchange="filterTopicsByCategory()">
+                        <option value="all">全て</option>
+                        <option value="work">💼 仕事</option>
+                        <option value="love">💕 恋愛</option>
+                        <option value="family">👨‍👩‍👧‍👦 家族</option>
+                        <option value="money">💰 お金</option>
+                        <option value="other">🔄 その他</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="sort-selector">並べ替え:</label>
+                    <select id="sort-selector">
+                        <option value="reaction">反応が多い順</option>
+                        <option value="new" selected>新しい順</option>
+                        <option value="old">古い順</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="topic-list">
+                <!-- トピックが動的に追加される -->
+            </div>
+        </div>
+        
+        <!-- トピック作成ページ -->
+        <div id="create" class="page">
+            <h2>✍️ トピック作成</h2>
+            <form id="create-form" onsubmit="createTopic(event)">
+                <div>
+                    <label>タイトル (必須)</label>
+                    <input type="text" id="title" placeholder="トピックのタイトルを入力" maxlength="50" required>
+                    <div class="error" id="title-error"></div>
+                </div>
+                
+                <div>
+                    <label>説明</label>
+                    <textarea id="description" placeholder="トピックの説明（任意）" maxlength="200"></textarea>
+                </div>
+                
+                <div>
+                    <label>カテゴリー</label>
+                    <select id="category" required>
+                        <option value="">選択してください</option>
+                        <option value="work">💼 仕事</option>
+                        <option value="love">💕 恋愛</option>
+                        <option value="family">👨‍👩‍👧‍👦 家族</option>
+                        <option value="money">💰 お金</option>
+                        <option value="other">🔄 その他</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <button type="submit">作成する</button>
+                    <button type="button" onclick="showPage('top')">キャンセル</button>
+                </div>
+                <div class="error" id="form-error"></div>
+                <div class="success" id="form-success"></div>
+            </form>
+        </div>
+        
+        <!-- 検索ページ -->
+        <div id="search" class="page">
+            <h2>🔍 トピック検索</h2>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="検索キーワードを入力" onkeyup="searchTopics()">
+            </div>
+            <div id="search-results">
+                <!-- 検索結果が表示される -->
+            </div>
+        </div>
+        
+        <!-- トピック詳細ページ -->
+        <div id="detail" class="page">
+            <!-- パンくずリスト -->
+            <div class="breadcrumb" style="margin-bottom: 15px; font-size: 14px; color: #bfc0d1;">
+                <span onclick="showPage('top')" style="cursor: pointer; text-decoration: underline;">🏠 トップ</span>
+                <span style="margin: 0 5px;">›</span>
+                <span id="detail-title-breadcrumb">トピック詳細</span>
+            </div>
+            
+            <h2 id="detail-title">トピック詳細</h2>
+            <div id="detail-content">
+                <!-- トピック詳細が表示される -->
+            </div>
+            <div id="posts">
+                <!-- 投稿一覧 -->
+            </div>
+            
+            <!-- フローティング投稿ボタン -->
+            <button id="floating-post-btn" class="floating-post-btn" onclick="togglePostForm()">
+                💬 本音を投稿
+            </button>
+            
+            <!-- 投稿フォーム（初期は非表示） -->
+            <div id="post-form-container" class="post-form-container hidden">
+                <div class="post-form-overlay" onclick="hidePostForm()"></div>
+                <div class="post-form-modal">
+                    <div class="post-form-header">
+                        <h3>💬 あなたの本音は？</h3>
+                        <button onclick="hidePostForm()" class="close-btn">✕</button>
+                    </div>
+                    <form id="post-form" onsubmit="addPost(event)">
+                        <textarea id="post-content" placeholder="本音を書いてください..." required></textarea>
+                        <div class="post-form-footer">
+                            <div id="char-counter">0/20</div>
+                            <div class="post-form-actions">
+                                <button type="button" onclick="hidePostForm()" class="cancel-btn">キャンセル</button>
+                                <button type="submit" class="submit-btn">投稿する</button>
+                            </div>
+                        </div>
+                        <div id="warning-message" class="warning"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // データストレージ
+        let topics = [];
+        
+        // JSONファイルからトピックデータを読み込む
+        // (asyncは非同期処理と言われ、並行して複数の処理を実行するために使う)
+        async function loadTopics() {
+            try {
+                console.log('トピックデータの読み込みを開始します...');
+                const response = await fetch('/topics.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                topics = await response.json();
+                console.log('トピックデータが正常に読み込まれました:', topics.length, '件');
+                // データ読み込み後にトップページを初期化
+                if (document.getElementById('top').classList.contains('active')) {
+                    displayTopics();
+                }
+            } catch (error) {
+                console.error('トピックデータの読み込みに失敗しました:', error);
+                alert('データの読み込みに失敗しました。' + error.message);
+                // フォールバック: 基本データを設定
+                topics = [
+                    {
+                        id: 1,
+                        title: "サンプルトピック",
+                        description: "データ読み込みが失敗しました",
+                        category: "other",
+                        posts: [],
+                        time: new Date().toLocaleString('ja-JP')
+                    }
+                ];
+            }
+        }
+        
+        let nextId = 21;
+        let currentTopic = null;
+        
+        // nextIdを動的に計算する関数
+        function updateNextId() {
+            if (topics.length > 0) {
+                nextId = Math.max(...topics.map(t => t.id)) + 1;
+            } else {
+                nextId = 1;
+            }
+        }
+        
+        // カテゴリーアイコンマップ
+        const categoryIcons = {
+            work: "💼",
+            love: "💕", 
+            family: "👨‍👩‍👧‍👦",
+            money: "💰",
+            other: "🔄"
+        };
+        
+        // ページ初期化
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadTopics();
+            updateNextId();
+            displayTopics();
+        });
+        
+        // ページ表示
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            
+            if (pageId === 'top') {
+                displayTopics();
+            } else if (pageId === 'search') {
+                displaySearchResults(topics);
+            }
+        }
+        
+        // トピック一覧表示
+        function displayTopics() {
+            const list = document.getElementById('topic-list');
+            list.innerHTML = '';
+            
+            topics.forEach(topic => {
+                const item = document.createElement('div');
+                item.className = 'topic-item';
+                item.onclick = () => showTopicDetail(topic.id);
+                
+                item.innerHTML = `
+                    <div class="topic-title">${categoryIcons[topic.category]} ${topic.title}</div>
+                    <div class="topic-meta">${topic.posts.length}件の投稿 • ${topic.time}</div>
+                `;
+                
+                list.appendChild(item);
+            });
+        }
+        
+        // トピック作成
+        function createTopic(event) {
+            event.preventDefault();
+            
+            const title = document.getElementById('title').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const category = document.getElementById('category').value;
+            
+            // バリデーション
+            if (!title || !category) {
+                document.getElementById('form-error').textContent = 'タイトルとカテゴリーは必須です';
+                return;
+            }
+            
+            // 新しいトピック追加
+            const newTopic = {
+                id: nextId++,
+                title: title,
+                description: description,
+                category: category,
+                posts: [],
+                time: getTime() // getTime()を使用
+            };
+            
+            topics.unshift(newTopic);
+            
+            // フォームリセット
+            document.getElementById('create-form').reset();
+            document.getElementById('form-error').textContent = '';
+            document.getElementById('form-success').textContent = 'トピックが作成されました！';
+            
+            // トップページに戻る
+            setTimeout(() => {
+                showPage('top');
+                document.getElementById('form-success').textContent = '';
+            }, 1500);
+        }
+        
+        // 検索
+        function searchTopics() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = topics.filter(topic => 
+                topic.title.toLowerCase().includes(query) ||
+                topic.description.toLowerCase().includes(query)
+            );
+            displaySearchResults(filtered);
+        }
+        
+        // 検索結果表示
+        function displaySearchResults(results) {
+            const container = document.getElementById('search-results');
+            container.innerHTML = '';
+            
+            if (results.length === 0) {
+                container.innerHTML = '<p>該当するトピックが見つかりません</p>';
+                return;
+            }
+            
+            results.forEach(topic => {
+                const item = document.createElement('div');
+                item.className = 'topic-item';
+                item.onclick = () => showTopicDetail(topic.id);
+                
+                item.innerHTML = `
+                    <div class="topic-title">${categoryIcons[topic.category]} ${topic.title}</div>
+                    <div class="topic-meta">${topic.posts.length}件の投稿</div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+        
+        // トピック詳細表示
+        function showTopicDetail(topicId) {
+            const topic = topics.find(t => t.id === topicId);
+            if (!topic) return;
+            
+            currentTopic = topic;
+            
+            document.getElementById('detail-title').textContent = topic.title;
+            document.getElementById('detail-content').innerHTML = `
+                <p>${topic.description}</p>
+                <div class="topic-meta">${categoryIcons[topic.category]} ${topic.category} • ${topic.time}</div>
+            `;
+            
+            const postsContainer = document.getElementById('posts');
+            postsContainer.innerHTML = '<h3>💬 投稿一覧</h3>';
+            
+
+            // 追加要件: 投稿が1件もない場合のメッセージを表示する
+            if (topic.posts.length === 0) {
+                postsContainer.innerHTML += '<p>まだこのトピックに対する投稿はありません</p>';
+            } else {
+                topic.posts.forEach((post, index) => {
+                    if (post.likes === undefined) post.likes = 0;
+                    if (post.liked === undefined) post.liked = false;
+                    
+                    const postItem = document.createElement('div');
+                    postItem.className = 'post-item';
+                    const likedClass = post.liked ? 'liked' : '';
+                    postItem.innerHTML = `
+                        <div class="post-content">
+                            <p>${post.content}</p>
+                        </div>
+                        <div class="post-bottom">
+                            <div class="post-meta">${post.time}</div>
+                            <div class="post-actions">
+                                <span class="like-count">いいね数: ${post.likes}件</span>
+                                <button class="${likedClass}" onclick="toggleLike(${topic.id}, ${index})">👍</button>
+                                <button class="delete-btn" onclick="deletePost(${topic.id}, ${index})">🗑</button>
+                            </div>
+                        </div>
+                    `;
+                    postsContainer.appendChild(postItem);
+                });
+            }
+
+            showPage('detail');
+        }
+        // 投稿削除
+function deletePost(topicId, postIndex) {
+    const topic = topics.find(t => t.id === topicId);
+    if (!topic) return;
+
+    if (confirm("この投稿を削除してもよろしいですか？")) {
+        topic.posts.splice(postIndex, 1); // 該当の投稿を削除
+        showTopicDetail(topicId); // 再描画
+    }
+}
+        // いいね切り替え
+        function toggleLike(topicId, postIndex) {
+        const topic = topics.find(t => t.id === topicId);
+        if (!topic) return;
+        const post = topic.posts[postIndex];
+        if (!post) return;
+        
+        if (post.liked) {
+            post.likes--;
+            post.liked = false;
+        } else {
+            post.likes++;
+            post.liked = true;
+        }
+        
+        showTopicDetail(topicId);
+}
+        // 投稿フォームの表示/非表示
+function togglePostForm() {
+    const container = document.getElementById('post-form-container');
+    container.classList.remove('hidden');
+    document.getElementById('post-content').focus();
+}
+
+function hidePostForm() {
+    const container = document.getElementById('post-form-container');
+    container.classList.add('hidden');
+    // フォームをリセット
+    document.getElementById('post-content').value = '';
+    document.getElementById('char-counter').textContent = '0/20';
+}
+
+// 投稿追加の修正版
+function addPost(event) {
+    event.preventDefault();
+    
+    const content = document.getElementById('post-content').value.trim();
+    if (!content || !currentTopic) return;
+    
+    const newPost = {
+        content: content,
+        time: getTime(),
+        likes: 0,
+        liked: false
+    };
+    
+    currentTopic.posts.unshift(newPost);
+    
+    // フォームを隠す
+    hidePostForm();
+    
+    // 詳細ページを再表示
+    showTopicDetail(currentTopic.id);
+}
+
+function getTime() { // 現在時刻の取得
+    let date = new Date(); // 変数名を修正
+
+    // YYYY/MM/DD HH:MM:SSへ変換
+    var formattedTime = date.getFullYear() + '/' + ('0' + (date.getMonth() + 1)).slice(-2) +
+        '/' +('0' + date.getDate()).slice(-2) + ' ' +  
+        ('0' + date.getHours()).slice(-2) + ':' + 
+        ('0' + date.getMinutes()).slice(-2) + ':' + 
+        ('0' + date.getSeconds()).slice(-2);
+
+    return formattedTime; // 戻り値を追加
+}
+
+// カテゴリーフィルター
+function filterTopicsByCategory() {
+    const selectedCategory = document.getElementById('category-filter').value;
+    const filteredTopics = selectedCategory === 'all' ? topics : topics.filter(topic => topic.category === selectedCategory);
+    
+    const list = document.getElementById('topic-list');
+    list.innerHTML = '';
+    
+    filteredTopics.forEach(topic => {
+        const item = document.createElement('div');
+        item.className = 'topic-item';
+        item.onclick = () => showTopicDetail(topic.id);
+        
+        item.innerHTML = `
+            <div class="topic-title">${categoryIcons[topic.category]} ${topic.title}</div>
+            <div class="topic-meta">${topic.posts.length}件の投稿 • ${topic.time}</div>
+        `;
+        
+        list.appendChild(item);
+    });
+}
+
+// 新規追加: updateTopicList 関数（カテゴリーと並べ替えの両方に対応）
+function updateTopicList() {
+    const categoryFilter = document.getElementById('category-filter').value;
+    const sortValue = document.getElementById('sort-selector').value;
+    // カテゴリでフィルタリング
+    let listTopics = (categoryFilter === 'all') ? topics.slice() : topics.filter(topic => topic.category === categoryFilter);
+    // 並べ替え処理
+    if(sortValue === 'reaction') {
+        listTopics.sort((a, b) => b.posts.length - a.posts.length);
+    } else if(sortValue === 'new') {
+        listTopics.sort((a, b) => new Date(b.time) - new Date(a.time));
+    } else if(sortValue === 'old') {
+        listTopics.sort((a, b) => new Date(a.time) - new Date(b.time));
+    }
+    const list = document.getElementById('topic-list');
+    list.innerHTML = '';
+    listTopics.forEach(topic => {
+        const item = document.createElement('div');
+        item.className = 'topic-item';
+        item.onclick = () => showTopicDetail(topic.id);
+        item.innerHTML = `
+            <div class="topic-title">${categoryIcons[topic.category]} ${topic.title}</div>
+            <div class="topic-meta">${topic.posts.length}件の投稿 • ${topic.time}</div>
+        `;
+        list.appendChild(item);
+    });
+}
+// 既存の displayTopics と filterTopicsByCategory を updateTopicList を呼び出すように修正
+function displayTopics() {
+    updateTopicList();
+}
+function filterTopicsByCategory() {
+    updateTopicList();
+}
+// DOMContentLoaded 内に並べ替えドロップダウンの onchange を設定
+document.addEventListener('DOMContentLoaded', function() {
+    displayTopics();
+    const sortSelector = document.getElementById('sort-selector');
+    if(sortSelector) {
+        sortSelector.addEventListener('change', updateTopicList);
+    }
+    // Add character counter and warning for post textarea
+    var postContent = document.getElementById('post-content');
+    var charCounter = document.getElementById('char-counter');
+    charCounter.style.color = '#babbcc';
+    var submitButton = document.querySelector('#post-form button[type="submit"]');
+    if (postContent && charCounter && submitButton) {
+        postContent.addEventListener('input', function() {
+            var currentLength = postContent.value.length;
+            charCounter.style.color = currentLength > 20 ? 'red' : '#babbcc';
+            charCounter.textContent = currentLength + '/20';
+            if (currentLength > 20) {
+                postContent.style.border = '2px solid red';
+                document.getElementById('warning-message').textContent = '20文字以内で入力してください';
+                submitButton.disabled = true;
+            } else {
+                postContent.style.border = '';
+                document.getElementById('warning-message').textContent = '';
+                submitButton.disabled = false;
+            }
+        });
+    }
+});
+    </script>
+</body>
+</html>
